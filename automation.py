@@ -46,7 +46,7 @@ def click_next_number(current_number):
 
 # Initialize the current number, the last number, and the list to store results
 current_number = 0
-last_number = 223  # Replace this with the actual last number
+last_number = 163  # Replace this with the actual last number
 results = []
 
 while True:
@@ -106,7 +106,7 @@ while True:
         break
 
 print("Results:", results)
-title = 'game_10'
+title = 'game_201'
 jsonStr = json.dumps(results)
 with open(title, "w") as tiedosto:
     tiedosto.write(jsonStr)
