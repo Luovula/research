@@ -15,12 +15,19 @@ for i in range(2, 40):
     # Read the JSON file
     if os.path.exists(file_name):
         with open(file_name, "r") as file:
-            cop_values = json.load(file)
+            data = json.load(file)
+            list_string = data[0]
+
+            # Remove the surrounding square brackets
+            list_string = list_string.strip("[]")
+
+            # Convert the string into a list of integers
+            cop_values = [float(x) for x in list_string.split(",")]
 
             # Extract values for each stage
-            opening_values = [v for v in cop_values[:30] if 0 < v < 15]
-            middle_values = [v for v in cop_values[80:120] if 0 < v < 15]
-            endgame_values = [v for v in cop_values[-40:] if 0 < v < 15]
+            opening_values = [v for v in cop_values[:30] if 0 < v]
+            middle_values = [v for v in cop_values[90:120] if 0 < v]
+            endgame_values = [v for v in cop_values[-30:] if 0 < v]
 
             # Add extracted values to the corresponding lists
             opening_data.extend(opening_values)
@@ -45,13 +52,11 @@ with open("cop_data.json", "w") as outfile:
     json.dump(data_to_save, outfile)
 
 # Print the results
-print("Opening data:", opening_data)
-print("Middle data:", middle_data)
-print("Endgame data:", endgame_data)
 
-cop = opening_data
-moves=list(range(0, len(opening_data)))
-x = np.arange(0,len(opening_data),10)
+
+cop = middle_data
+moves=list(range(0, len(middle_data)))
+x = np.arange(0,len(middle_data),40)
 plt.bar(moves,cop,color=['black'], width = 0.5)
 plt.xticks(x)
 plt.xlabel('total moves')
