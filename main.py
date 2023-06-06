@@ -1,53 +1,42 @@
-import courses
+import os
+import sqlite3
+import timeit
+import random
+import string
 
-courses.create_tables()
 
-t1 = courses.create_teacher("Erkki Kaila")
-t2 = courses.create_teacher("Antti Laaksonen")
-t3 = courses.create_teacher("Matti Luukkainen")
-t4 = courses.create_teacher("Emilia Oikarinen")
-t5 = courses.create_teacher("Leena Salmela")
+# os.remove("elokuvat.db")
+kirjaimet = string.ascii_letters
 
-c1 = courses.create_course("Laskennan mallit", 7, [t1, t3])
-c2 = courses.create_course("Ohjelmistotuotanto", 9, [t1, t2, t5])
-c3 = courses.create_course("Ohjelmoinnin perusteet", 8, [t2, t5])
-c4 = courses.create_course("Tietokantojen perusteet", 4, [t3, t4])
-c5 = courses.create_course("Tietokoneen toiminta", 6, [t5])
+db = sqlite3.connect("elokuvat.db")
+db.isolation_level = None
 
-s1 = courses.create_student("Heikki Lokki")
-s2 = courses.create_student("Liisa Marttinen")
-s3 = courses.create_student("Otto Nurmi")
-s4 = courses.create_student("Esko Ukkonen")
-s5 = courses.create_student("Arto Wikla")
 
-courses.add_credits(s1, c1, "2020-01-10", 1)
-courses.add_credits(s1, c2, "2021-05-02", 2)
-courses.add_credits(s1, c4, "2021-04-20", 5)
-courses.add_credits(s2, c1, "2021-03-10", 5)
-courses.add_credits(s2, c2, "2022-09-08", 5)
-courses.add_credits(s3, c3, "2022-09-10", 3)
-courses.add_credits(s4, c3, "2022-11-01", 3)
-courses.add_credits(s4, c4, "2020-11-29", 5)
+start = timeit.default_timer()
 
-courses.create_group("Basic-koodarit", [t1, t2], [s1, s2, s3, s5])
-courses.create_group("Cobol-koodarit", [t4], [s2, s4, s5])
-courses.create_group("Fortran-koodarit", [], [s5])
-courses.create_group("PHP-koodarit", [t1, t2, t3], [s2, s3, s4, s5])
+db.execute("BEGIN;")
+db.execute("CREATE TABLE Elokuvat (id INTEGER PRIMARY KEY, nimi TEXT, vuosi INTEGER)")
+for i in range(999999):
+    random_name = ''.join(random.choice(kirjaimet) for _ in range(8))
+    random_year = random.randint(1900,2000)
+    db.execute("INSERT INTO Elokuvat(nimi, vuosi) VALUES (?,?)",[random_name,random_year])
+db.execute("COMMIT;")
 
-print(courses.courses_by_teacher("Leena Salmela"))
-print(courses.credits_by_teacher("Leena Salmela"))
-print(courses.courses_by_student("Esko Ukkonen"))
+stop = timeit.default_timer()
 
-print(courses.credits_by_year(2020))
-print(courses.credits_by_year(2021))
-print(courses.credits_by_year(2022))
+print('Aikaa kului: ', stop-start)
 
-print(courses.grade_distribution("Ohjelmoinnin perusteet"))
-print(courses.grade_distribution("Tietokoneen toiminta"))
+start = timeit.default_timer()
+db.execute("BEGIN;")
+for i in range(999):
+    chosen_year = random.randint(1900,2000)
+    db.execute("SELECT COUNT(E.id) FROM Elokuvat E WHERE E.vuosi = ?", [chosen_year])
+db.execute("COMMIT;")
 
-print(courses.course_list())
-print(courses.teacher_list())
+stop = timeit.default_timer()
 
-print(courses.group_people("Basic-koodarit"))
-print(courses.credits_in_groups())
-print(courses.common_groups("Antti Laaksonen", "Otto Nurmi"))
+print('Aikaa kului: ', stop-start)
+print(os.path.getsize("elokuvat.db"))
+
+
+
